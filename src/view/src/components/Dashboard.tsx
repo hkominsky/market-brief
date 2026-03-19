@@ -36,23 +36,26 @@ const Dashboard = () => {
     <div className="min-h-screen bg-brand-bg flex items-start justify-center p-6">
       <div className="w-full max-w-lg space-y-4">
 
-      {/* Header */}
-      <div className="bg-brand-card border border-brand-border rounded-card p-6">
-        <h2 className="font-sans text-xl font-semibold text-brand-text mb-1">Earnings Analysis</h2>
-        <p className="font-sans text-sm text-brand-subtext mb-3">
-          {earningsCalls.length === 1 ? "1 transcript processed." : `${earningsCalls.length} transcripts processed.`}
-        </p>
-        <button
-          onClick={reset}
-          className="text-xs font-semibold text-brand-muted hover:text-brand-text transition-colors duration-150 cursor-pointer"
-        >
-          ← New Upload
-        </button>
-      </div>
+      {/* Header + Logo */}
+      <div className="flex gap-4">
+        {/* Header */}
+        <div className="flex-1 bg-brand-card border border-brand-border rounded-card p-6">
+          <h2 className="font-sans text-xl font-semibold text-brand-text mb-1">Earnings Analysis</h2>
+          <p className="font-sans text-sm text-brand-subtext mb-3">
+            {earningsCalls.length === 1 ? "1 transcript processed." : `${earningsCalls.length} transcripts processed.`}
+          </p>
+          <button
+            onClick={reset}
+            className="text-xs font-semibold text-brand-muted hover:text-brand-text transition-colors duration-150 cursor-pointer"
+          >
+            ← New Upload
+          </button>
+        </div>
 
-      {/* Logo */}
-      <div className="bg-brand-card border border-brand-border rounded-card p-8 flex items-center justify-center">
-        <img src={logo} alt="Logo" className="h-16 w-auto" />
+        {/* Logo */}
+        <div className="bg-brand-card border border-brand-border rounded-card p-6 flex items-center justify-center">
+          <img src={logo} alt="Logo" className="h-16 w-auto" />
+        </div>
       </div>
 
         {/* Ticker selector */}
