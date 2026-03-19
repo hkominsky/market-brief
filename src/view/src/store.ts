@@ -6,6 +6,7 @@ interface EarningsCall {
   summary: string | null;
   ticker: string;
   date: string;
+  kpis?: { kpi: string; value: number; unit: string }[];
 }
 
 interface StoreState {

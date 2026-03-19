@@ -1,7 +1,7 @@
 import React from "react";
-import useStore from "./store.ts";
-import UploadForm from "./components/UploadForm.tsx";
-import Dashboard from "./components/Dashboard.tsx";
+import useStore from "./store";
+import UploadForm from "./components/UploadForm";
+import Dashboard from "./components/Dashboard";
 
 export default function App() {
   const { earningsCalls, error }: { earningsCalls: any; error: string | null } = useStore();
