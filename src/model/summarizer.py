@@ -8,7 +8,7 @@ from src.model.kpi import KPI
 class Summarizer:
     # Extracts a structured summary and KPIs from earnings call transcripts using GPT
 
-    def __init__(self, model: str = "gpt-4", max_tokens: int = 1024, temperature: float = 0.2):
+    def __init__(self, model: str = "gpt-4.1-mini", max_tokens: int = 1024, temperature: float = 0.2):
         # Initializes the GPT client using the provided model settings and environment API key
         api_key = os.environ.get("OPEN_AI_API_KEY", "")
         self.client = GPTClient(model=model, api_key=api_key)
