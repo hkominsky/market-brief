@@ -5,10 +5,10 @@ module.exports = {
     extend: {
       colors: {
         brand: {
-          bg: "#0a0a0f",          // Deep near-black with a faint blue-black tint
-          surface: "#111118",     // Slightly lighter surface for layering
-          card: "#16161f",        // Card background — dark navy-black
-          border: "#1e1e2e",      // Subtle border, cool-toned
+          bg: "#0a0a0f",
+          surface: "#111118",
+          card: "#16161f",
+          border: "#1e1e2e",
           accent: "#3bff6f",
           "accent-dim": "#1aff5540",
           positive: "#3bff6f",
@@ -42,7 +42,6 @@ module.exports = {
         'accent-gradient': 'linear-gradient(135deg, #3bff6f 0%, #00d4aa 100%)',
       },
       fontSize: {
-        // Financial display sizes
         'display': ['3rem', { lineHeight: '1', letterSpacing: '-0.03em', fontWeight: '600' }],
         'heading': ['1.5rem', { lineHeight: '1.2', letterSpacing: '-0.02em', fontWeight: '600' }],
         'label': ['0.6875rem', { lineHeight: '1', letterSpacing: '0.08em', fontWeight: '500' }],
