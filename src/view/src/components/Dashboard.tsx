@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import useStore from "../store.ts";
+import useStore from "../store";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 
 interface KPI {

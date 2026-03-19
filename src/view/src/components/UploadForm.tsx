@@ -1,5 +1,5 @@
 import React, { useRef, useState } from "react";
-import useStore from "../store.ts";
+import useStore from "../store";
 
 const ACCEPTED = [".txt", ".mp3", ".wav"];
 
