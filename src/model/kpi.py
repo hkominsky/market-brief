@@ -1,6 +1,5 @@
 from typing import List, Dict, Any
 import json, re
-
 class KPI:
     # Standardizes the important KPI's format when parsed from earnings calls
 

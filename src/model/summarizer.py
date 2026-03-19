@@ -3,10 +3,8 @@ import os
 import re
 from typing import List, Dict, Any
 
-from gpt_client import GPTClient
-from kpi import KPI
-
-
+from src.model.gpt_client import GPTClient
+from src.model.kpi import KPI
 class Summarizer:
     # Extracts a structured summary and KPIs from earnings call transcripts using GPT
 

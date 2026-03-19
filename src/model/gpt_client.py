@@ -1,7 +1,5 @@
 from typing import List, Dict
 from openai import OpenAI
-
-
 class GPTClient:
     # Abstracts OpenAI call
 

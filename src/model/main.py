@@ -4,8 +4,8 @@ from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 import shutil, os, tempfile
 
-from transcriber import Transcriber
-from summarizer import Summarizer
+from src.model.transcriber import Transcriber
+from src.model.summarizer import Summarizer
 
 load_dotenv()
 

@@ -1,6 +1,5 @@
 import whisper
 
-
 class Transcriber:
     # Processes uploaded files into plain text. Accepts .mp3, .wav, and .txt
 
