@@ -38,7 +38,7 @@ async def upload_transcript(file: UploadFile = File(...)):
 
         # Extract key insights and KPIs from the processed text
         summarizer = Summarizer()
-        result = summarizer.summarize(text)
+        result = await summarizer.summarize(text)
 
         return result
     finally:
