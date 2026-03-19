@@ -30,3 +30,14 @@ Thumbs.db
 # IDEs
 .vscode/
 .idea/
+
+# React / Frontend build artifacts
+src/view/node_modules/
+src/view/build/
+src/view/.env.local
+src/view/.env.development.local
+src/view/.env.test.local
+src/view/.env.production.local
+src/view/npm-debug.log*
+src/view/yarn-debug.log*
+src/view/yarn-error.log*
