@@ -14,10 +14,9 @@ module.exports = {
           positive: "#3bff6f",
           negative: "#ff4d6d",
           warning: "#fbbf24",
-          muted: "#3a3a50",
+          muted: "#6b6b85",
           text: "#f0f0fa",
-          subtext: "#6b6b85",
-          "subtext-light": "#9898b0",
+          subtext: "#9898b0",
         },
       },
       fontFamily: {

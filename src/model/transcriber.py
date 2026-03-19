@@ -5,7 +5,15 @@ class Transcriber:
 
     def __init__(self, model_name: str = "base"):
         # Loads the specified Whisper model into memory
-        self.model = whisper.load_model(model_name)
+        self.model_name = model_name
+        self._model = None
+
+    @property
+    def model(self):
+        # Lazily loads Whisper model
+        if self._model is None:
+            self._model = whisper.load_model(self.model_name)
+        return self._model
 
     def process(self, file_path: str, suffix: str) -> str:
         # Routes the file to the appropriate processing method based on its extension
