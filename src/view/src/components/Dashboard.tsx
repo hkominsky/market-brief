@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import useStore from "../store";
 import QAChat from "./QAChat";
+import logo from "../assets/logo.svg";
 
 const SentimentBlock = ({ label, data }: { label: string; data: any }) => {
   const labelClass =
@@ -35,51 +36,54 @@ const Dashboard = () => {
     <div className="min-h-screen bg-brand-bg flex items-start justify-center p-6">
       <div className="w-full max-w-lg space-y-4">
 
-        {/* Header + Ticker */}
-        <div className="flex gap-4">
-          <div className="flex-1 bg-brand-card border border-brand-border rounded-card p-6">
-            <h2 className="font-sans text-xl font-semibold text-brand-text mb-1">Earnings Analysis</h2>
-            <p className="font-sans text-sm text-brand-subtext mb-3">
-              {earningsCalls.length === 1 ? "1 transcript processed." : `${earningsCalls.length} transcripts processed.`}
-            </p>
-            <button
-              onClick={reset}
-              className="text-xs font-semibold text-brand-muted hover:text-brand-text transition-colors duration-150 cursor-pointer"
-            >
-              ← New Upload
-            </button>
-          </div>
+      {/* Header */}
+      <div className="bg-brand-card border border-brand-border rounded-card p-6">
+        <h2 className="font-sans text-xl font-semibold text-brand-text mb-1">Earnings Analysis</h2>
+        <p className="font-sans text-sm text-brand-subtext mb-3">
+          {earningsCalls.length === 1 ? "1 transcript processed." : `${earningsCalls.length} transcripts processed.`}
+        </p>
+        <button
+          onClick={reset}
+          className="text-xs font-semibold text-brand-muted hover:text-brand-text transition-colors duration-150 cursor-pointer"
+        >
+          ← New Upload
+        </button>
+      </div>
 
-          {selectedCall && (
-            <div className="bg-brand-card border border-brand-border rounded-card p-6">
-              <p className="text-xs text-brand-subtext uppercase tracking-widest mb-1">Ticker</p>
-              <h1 className="font-sans text-3xl font-semibold text-brand-accent">{selectedCall.ticker}</h1>
-              <p className="font-sans text-sm text-brand-muted mt-1">{selectedCall.date}</p>
-            </div>
-          )}
-        </div>
+      {/* Logo */}
+      <div className="bg-brand-card border border-brand-border rounded-card p-8 flex items-center justify-center">
+        <img src={logo} alt="Logo" className="h-16 w-auto" />
+      </div>
 
         {/* Ticker selector */}
-        {earningsCalls.length > 1 && (
-          <div className="bg-brand-card border border-brand-border rounded-card p-8">
-            <p className="text-sm font-semibold text-brand-text mb-3">Select Result</p>
-            <div className="flex flex-wrap gap-2">
-              {earningsCalls.map((call) => (
-                <button
-                  key={call.id}
-                  onClick={() => setSelected(call.id)}
-                  className={`
-                    px-4 py-2 rounded-card text-sm font-semibold transition-all duration-150 cursor-pointer
-                    ${selected === call.id
-                      ? "bg-brand-accent text-brand-bg"
-                      : "bg-brand-bg border border-brand-border text-brand-subtext hover:border-brand-muted hover:text-brand-text"
-                    }
-                  `}
-                >
-                  {call.ticker} — {call.date}
-                </button>
-              ))}
+        {selectedCall && (
+          <div className="bg-brand-card border border-brand-border rounded-card p-6">
+            <div className="flex items-center justify-between mb-4">
+              <p className="text-xs text-brand-subtext uppercase tracking-widest">Ticker</p>
+              <p className="font-sans text-sm text-brand-muted">{selectedCall.date}</p>
             </div>
+            <h1 className="font-sans text-3xl font-semibold text-brand-accent mb-4">
+              {selectedCall.ticker}
+            </h1>
+            {earningsCalls.length > 1 && (
+              <div className="flex flex-wrap gap-2 pt-4 border-t border-brand-border">
+                {earningsCalls.map((call) => (
+                  <button
+                    key={call.id}
+                    onClick={() => setSelected(call.id)}
+                    className={`
+                      px-4 py-2 rounded-card text-sm font-semibold transition-all duration-150 cursor-pointer
+                      ${selected === call.id
+                        ? "bg-brand-accent text-brand-bg"
+                        : "bg-brand-bg border border-brand-border text-brand-subtext hover:border-brand-muted hover:text-brand-text"
+                      }
+                    `}
+                  >
+                    {call.ticker} — {call.date}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
         )}
 
