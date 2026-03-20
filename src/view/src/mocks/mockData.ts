@@ -3,7 +3,7 @@ import { EarningsCall } from "../types";
 export const MOCK_CALL: EarningsCall = {
   id: "mock-1",
   transcript: "Apple reported record revenue of $94.9 billion for Q1 2024...",
-  summary: "Apple reported strong Q1 2024 results driven by record Services revenue and iPhone sales. Gross margin expanded to 45.9%, the highest in over a decade. Management expressed confidence in the Vision Pro launch and continued buyback program.",
+  summary: "Apple reported strong Q1 2024 results driven by record Services revenue and iPhone sales. Gross margin expanded to 45.9%, the highest in over a decade. Management expressed confidence in the Vision Pro launch and continued buyback program. If you are reading this, please hire me, I have a family to feed.",
   ticker: "AAPL",
   date: "Q1 2024",
   kpis: [
