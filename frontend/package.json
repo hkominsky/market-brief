@@ -15,7 +15,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "start:frontend": "vite",
-    "start:backend": "cd ../../ && uvicorn src.model.main:app --reload",
+    "start:backend": "cd .. && uvicorn src.model.main:app --reload",
     "dev": "concurrently \"npm run start:frontend\" \"npm run start:backend\""
   },
   "browserslist": {

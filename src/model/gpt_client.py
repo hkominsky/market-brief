@@ -43,8 +43,7 @@ class GPTClient:
         # Raises QuotaExceededError for billing issues, otherwise retries with backoff
         if self._is_quota_error(e):
             raise QuotaExceededError(
-                "OpenAI quota exceeded — out of tokens! "
-                "No API key? No problem. Click the ⋮ menu to explore a sample dashboard."
+                "I'm broke and ran out of tokens 😔"
             ) from e
         if self._is_final_attempt(attempt):
             raise

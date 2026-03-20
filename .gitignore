@@ -1,6 +1,6 @@
 #Dependency Directories
 node_modules/
-src/view/node_modules/
+frontend/node_modules/
 .pnp
 .pnp.js
 
@@ -20,7 +20,7 @@ include/
 
 #Production and Build Artifacts
 build/
-src/view/build/
+frontend/build/
 /coverage
 
 #Environment Variables and Secrets
@@ -31,18 +31,18 @@ src/view/build/
 .env.development.local
 .env.test.local
 .env.production.local
-src/view/.env.local
-src/view/.env.development.local
-src/view/.env.test.local
-src/view/.env.production.local
+frontend/.env.local
+frontend/.env.development.local
+frontend/.env.test.local
+frontend/.env.production.local
 
 #Logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-src/view/npm-debug.log*
-src/view/yarn-debug.log*
-src/view/yarn-error.log*
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
 
 #OS Generated Files
 .DS_Store
