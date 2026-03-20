@@ -24,8 +24,8 @@ _VALID_JSON = json.dumps({
     "ticker": "AAPL",
     "date": "Q3 2024",
     "sentiment": {
-        "prepared_statements": {"label": "bullish", "confidence": 0.9, "key_phrases": ["strong growth"]},
-        "qa": {"label": "neutral", "confidence": 0.6, "key_phrases": []},
+        "prepared_statements": {"label": "bullish", "confidence": 0.9},
+        "qa": {"label": "neutral", "confidence": 0.6},
     },
 })
 

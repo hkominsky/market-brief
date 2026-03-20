@@ -15,13 +15,11 @@ export const MOCK_CALL: EarningsCall = {
   sentiment: {
     prepared_statements: {
       label: "bullish",
-      confidence: 0.88,
-      key_phrases: ["record Services revenue", "highest gross margin", "strong demand"],
+      confidence: 0.88
     },
     qa: {
       label: "neutral",
-      confidence: 0.72,
-      key_phrases: ["China headwinds", "cautious on guidance", "Vision Pro ramp"],
+      confidence: 0.72
     },
   },
 };

@@ -80,7 +80,7 @@ class Summarizer:
                 "2. \"kpis\": a list of objects each with \"kpi\" (metric name), \"value\" (numeric), and \"unit\ For unit, you MUST use one of the following values only: \"%\", \"B\", \"M\", \"K\", \"x\", or \"\" (empty string if unitless).\n"
                 "3. \"ticker\": the company ticker symbol (e.g. AAPL). Return null if not found.\n"
                 "4. \"date\": the earnings call period (e.g. Q3 2024). Return null if not found.\n"
-                "5. \"sentiment\": an object with two keys \"prepared_statements\" and \"qa\", each containing \"label\" (bullish, neutral, or bearish), \"confidence\" (0.0-1.0), and \"key_phrases\" (list of up to 3 phrases that drove the assessment).\n"
+                "5. \"sentiment\": an object with two keys \"prepared_statements\" and \"qa\", each containing \"label\" (bullish, neutral, or bearish), \"confidence\" (0.0-1.0).\n"
                 "Respond with raw JSON only — no markdown, no explanation."
             )},
             {"role": "user", "content": transcript},

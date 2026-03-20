@@ -7,7 +7,6 @@ export interface KPI {
 export interface SentimentSection {
   label: "bullish" | "neutral" | "bearish";
   confidence: number;
-  key_phrases: string[];
 }
 
 export interface Sentiment {
