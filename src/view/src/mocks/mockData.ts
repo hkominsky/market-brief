@@ -7,10 +7,10 @@ export const MOCK_CALL: EarningsCall = {
   ticker: "AAPL",
   date: "Q1 2024",
   kpis: [
-    { kpi: "Revenue", value: 94.9, unit: "USD B" },
+    { kpi: "Revenue", value: 94.9, unit: "B" },
     { kpi: "Gross Margin", value: 45.9, unit: "%" },
-    { kpi: "EPS", value: 2.18, unit: "USD" },
-    { kpi: "Net Income", value: 33.9, unit: "USD B" },
+    { kpi: "EPS", value: 2.18, unit: "" },
+    { kpi: "Net Income", value: 33.9, unit: "B" },
   ],
   sentiment: {
     prepared_statements: {

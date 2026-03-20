@@ -10,7 +10,7 @@ from src.model.gpt_client import GPTClient
 from src.model.transcriber import Transcriber
 from src.model.summarizer import Summarizer
 from src.model.qa import QAClient
-from src.schemas import AskRequest
+from src.model.schemas import AskRequest
 
 load_dotenv()
 
@@ -24,7 +24,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Single shared GPTClient and service instances for the lifetime of the app
 _gpt = GPTClient(model="gpt-4.1-mini", api_key=os.environ.get("OPEN_AI_API_KEY", ""))
 _transcriber = Transcriber()
 _summarizer = Summarizer(client=_gpt)
