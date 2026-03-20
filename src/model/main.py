@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
-from src.model.gpt_client import GPTClient, TokenLimitExceededError, QuotaExceededError
+from src.model.gpt_client import GPTClient, QuotaExceededError
 from src.model.transcriber import Transcriber
 from src.model.summarizer import Summarizer
 from src.model.qa import QAClient
@@ -38,6 +38,13 @@ _summarizer = Summarizer(client=_gpt)
 _qa = QAClient(client=_gpt)
 
 
+def _raise_if_quota(e: Exception) -> None:
+    # Converts a QuotaExceededError into a 402 HTTP response
+    if isinstance(e, QuotaExceededError):
+        raise HTTPException(status_code=402, detail=str(e))
+    raise e
+
+
 @app.post("/upload")
 async def upload_transcript(file: UploadFile = File(...)):
     # Validates, transcribes, and analyzes an uploaded earnings call file
@@ -53,10 +60,8 @@ async def upload_transcript(file: UploadFile = File(...)):
         text = await _transcriber.process(tmp_path, suffix)
         result = await _summarizer.summarize(text)
         return {**result, "transcript": text}
-    except QuotaExceededError as e:
-        raise HTTPException(status_code=402, detail=str(e))
-    except TokenLimitExceededError as e:
-        raise HTTPException(status_code=422, detail=str(e))
+    except Exception as e:
+        _raise_if_quota(e)
     finally:
         os.unlink(tmp_path)
 
@@ -71,7 +76,5 @@ async def ask_question(body: AskRequest):
             history=body.history,
         )
         return {"answer": answer}
-    except QuotaExceededError as e:
-        raise HTTPException(status_code=402, detail=str(e))
-    except TokenLimitExceededError as e:
-        raise HTTPException(status_code=422, detail=str(e))
+    except Exception as e:
+        _raise_if_quota(e)

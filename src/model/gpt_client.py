@@ -3,16 +3,9 @@ import random
 from typing import List, Dict
 from openai import AsyncOpenAI, RateLimitError, APIStatusError
 
-
-class TokenLimitExceededError(RuntimeError):
-    """Raised when the GPT response was truncated due to max_tokens being reached."""
-    pass
-
-
 class QuotaExceededError(RuntimeError):
     """Raised when the OpenAI account has insufficient quota/billing."""
     pass
-
 
 class GPTClient:
     # Single shared async OpenAI client with retry logic for all GPT calls
@@ -28,21 +21,12 @@ class GPTClient:
         for attempt in range(self.max_retries):
             try:
                 return await self._create_completion(messages, max_tokens, temperature)
-            except (TokenLimitExceededError, QuotaExceededError):
+            except QuotaExceededError:
                 raise
             except RateLimitError as e:
-                if self._is_quota_error(e):
-                    raise QuotaExceededError(
-                        "I ran out of tokens :("
-                    ) from e
-                if self._is_final_attempt(attempt):
-                    raise
-                await self._backoff(attempt, jitter=True)
+                await self._handle_rate_limit(e, attempt)
             except APIStatusError as e:
-                if e.status_code >= 500 and not self._is_final_attempt(attempt):
-                    await self._backoff(attempt)
-                else:
-                    raise
+                await self._handle_server_error(e, attempt)
         raise RuntimeError("GPT chat failed after all retries without a terminal exception")
 
     async def _create_completion(self, messages: List[Dict[str, str]], max_tokens: int, temperature: float) -> str:
@@ -53,13 +37,25 @@ class GPTClient:
             max_tokens=max_tokens,
             temperature=temperature,
         )
-        choice = response.choices[0]
-        if choice.finish_reason == "length":
-            raise TokenLimitExceededError(
-                f"GPT response was truncated: max_tokens={max_tokens} was reached. "
-                "Consider increasing max_tokens or reducing the input size."
-            )
-        return choice.message.content
+        return response.choices[0].message.content
+
+    async def _handle_rate_limit(self, e: RateLimitError, attempt: int) -> None:
+        # Raises QuotaExceededError for billing issues, otherwise retries with backoff
+        if self._is_quota_error(e):
+            raise QuotaExceededError(
+                "OpenAI quota exceeded — out of tokens! "
+                "No API key? No problem. Click the ⋮ menu to explore a sample dashboard."
+            ) from e
+        if self._is_final_attempt(attempt):
+            raise
+        await self._backoff(attempt, jitter=True)
+
+    async def _handle_server_error(self, e: APIStatusError, attempt: int) -> None:
+        # Retries on 5xx errors until the final attempt, then re-raises
+        if e.status_code >= 500 and not self._is_final_attempt(attempt):
+            await self._backoff(attempt)
+        else:
+            raise
 
     def _is_quota_error(self, e: RateLimitError) -> bool:
         # Distinguishes a hard billing quota error from a temporary rate limit
