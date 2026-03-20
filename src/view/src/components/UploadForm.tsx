@@ -5,9 +5,11 @@ const ACCEPTED = [".txt", ".mp3", ".wav"];
 
 interface UploadFormProps {
   onLoadMock?: () => void;
+  onLoadSample?: () => void;
+  sampleFile?: File | null;
 }
 
-const UploadForm = ({ onLoadMock }: UploadFormProps) => {
+const UploadForm = ({ onLoadMock, onLoadSample, sampleFile }: UploadFormProps) => {
   const { setEarningsCalls, setLoading, setError, loading } = useStore();
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [dragging, setDragging] = useState(false);
@@ -15,7 +17,10 @@ const UploadForm = ({ onLoadMock }: UploadFormProps) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
 
-  // Close menu when clicking outside
+  useEffect(() => {
+    if (sampleFile) setSelectedFile(sampleFile);
+  }, [sampleFile]);
+
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
@@ -43,15 +48,18 @@ const UploadForm = ({ onLoadMock }: UploadFormProps) => {
     formData.append("file", selectedFile);
     setLoading(true);
     try {
-      const res = await fetch("http://localhost:8000/upload", {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/upload`, {
         method: "POST",
         body: formData,
       });
       if (!res.ok) {
-        const err = await res.json();
-        throw new Error(err.detail || "Upload failed");
+        const text = await res.text();
+        let detail = "Upload failed";
+        try { detail = JSON.parse(text).detail || detail; } catch {}
+        throw new Error(detail);
       }
-      const data = await res.json();
+      const text = await res.text();
+      const data = JSON.parse(text);
       setEarningsCalls(Array.isArray(data) ? data : [data]);
     } catch (err: any) {
       setError(err.message || "Something went wrong");
@@ -62,7 +70,6 @@ const UploadForm = ({ onLoadMock }: UploadFormProps) => {
     <div className="min-h-screen bg-brand-bg flex items-center justify-center p-6">
       <div className="w-full max-w-lg bg-brand-card border border-brand-border rounded-card p-8">
 
-        {/* Header row with three-dot menu */}
         <div className="mb-6 flex items-start justify-between">
           <div>
             <h2 className="font-sans text-xl font-semibold text-brand-text mb-1">
@@ -73,7 +80,6 @@ const UploadForm = ({ onLoadMock }: UploadFormProps) => {
             </p>
           </div>
 
-          {/* Three-dot menu */}
           <div className="relative" ref={menuRef}>
             <button
               onClick={() => setMenuOpen((prev) => !prev)}
@@ -96,7 +102,16 @@ const UploadForm = ({ onLoadMock }: UploadFormProps) => {
                   }}
                   className="w-full text-left px-4 py-2 text-sm text-brand-text hover:bg-brand-border/40 transition-colors"
                 >
-                  Dashboard Example
+                  Dashboard Sample
+                </button>
+                <button
+                  onClick={() => {
+                    setMenuOpen(false);
+                    onLoadSample?.();
+                  }}
+                  className="w-full text-left px-4 py-2 text-sm text-brand-text hover:bg-brand-border/40 transition-colors"
+                >
+                  Load Sample File
                 </button>
               </div>
             )}
@@ -127,7 +142,7 @@ const UploadForm = ({ onLoadMock }: UploadFormProps) => {
         >
           {selectedFile ? (
             <>
-              <p className="text-xs text-brand-subtext uppercase tracking-widest">File Loaded</p>
+              <p className="text-xs text-brand-subtext uppercase tracking-widest">File Added</p>
               <p className="text-sm text-brand-accent font-medium">{selectedFile.name}</p>
               <p className="text-xs text-brand-muted">Click to replace</p>
             </>

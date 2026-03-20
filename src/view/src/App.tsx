@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import useStore from "./store";
 import UploadForm from "./components/UploadForm";
 import Dashboard from "./components/Dashboard";
@@ -9,6 +9,7 @@ import { SpeedInsights } from "@vercel/speed-insights/react";
 
 export default function App() {
   const { earningsCalls, error, setError, setEarningsCalls, reset } = useStore();
+  const [sampleFile, setSampleFile] = useState<File | null>(null);
 
   useEffect(() => {
     if (error) {
@@ -16,6 +17,13 @@ export default function App() {
       return () => clearTimeout(t);
     }
   }, [error]);
+
+  const handleLoadSample = async () => {
+    const res = await fetch("/sample-transcript.txt");
+    const text = await res.text();
+    const file = new File([text], "sample-transcript.txt", { type: "text/plain" });
+    setSampleFile(file);
+  };
 
   return (
     <div className="relative min-h-screen bg-brand-bg">
@@ -34,9 +42,13 @@ export default function App() {
           <span>{error}</span>
         </div>
       )}
-      {earningsCalls
+      {earningsCalls && earningsCalls.length > 0
         ? <Dashboard />
-        : <UploadForm onLoadMock={() => setEarningsCalls([MOCK_CALL])} />
+        : <UploadForm
+            onLoadMock={() => setEarningsCalls([MOCK_CALL])}
+            onLoadSample={handleLoadSample}
+            sampleFile={sampleFile}
+          />
       }
       <Analytics />
       <SpeedInsights />
