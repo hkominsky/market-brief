@@ -1,7 +1,9 @@
 # Market Brief
 
 MarketBrief is a full-stack web application for analyzing earnings call transcripts.
+
 Upload a transcript or audio file and get a structured breakdown. This includes a plain-English summary, key financial metrics, sentiment analysis across prepared statements and Q&A, and an AI chat interface grounded in the full transcript.
+
 Its goal is to efficiently turn raw financial disclosures into structured, interactable insights in seconds.
 
 Live at https://marketbrief.dev
