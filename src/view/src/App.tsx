@@ -19,7 +19,7 @@ export default function App() {
     <div className="relative min-h-screen bg-brand-bg">
       <div className="flex justify-start px-4 pt-4 lg:p-0">
         <div className="flex items-center gap-2 opacity-80 lg:absolute lg:top-4 lg:left-4">
-          <img src={logo} alt="Logo" className="h-10 w-auto" />
+          <img src={logo} alt="Logo" className="h-8 w-auto" />
           <span className="font-display text-sm font-semibold text-brand-text">Market Brief</span>
         </div>
       </div>
