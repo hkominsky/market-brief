@@ -96,7 +96,7 @@ const UploadForm = ({ onLoadMock }: UploadFormProps) => {
                   }}
                   className="w-full text-left px-4 py-2 text-sm text-brand-text hover:bg-brand-border/40 transition-colors"
                 >
-                  Try for Free!
+                  Dashboard Example
                 </button>
               </div>
             )}
