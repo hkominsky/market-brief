@@ -1,8 +1,4 @@
-import os
-import sys
 from kpi import KPI
-
-sys.path.insert(0, os.path.dirname(__file__))
 
 class TestKPI:
     def test_stores_kpi_name(self):

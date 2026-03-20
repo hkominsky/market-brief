@@ -4,8 +4,6 @@ import sys
 from unittest.mock import AsyncMock, MagicMock
 import pytest
 
-sys.path.insert(0, os.path.dirname(__file__))
-
 sys.modules.setdefault("whisper", MagicMock())
 sys.modules.setdefault("openai", MagicMock())
 

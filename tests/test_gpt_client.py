@@ -4,8 +4,6 @@ import sys
 from unittest.mock import AsyncMock, MagicMock, patch
 import pytest
 
-sys.path.insert(0, os.path.dirname(__file__))
-
 import openai as _real_openai_pkg
 _RealRateLimitError = _real_openai_pkg.RateLimitError
 _RealAPIStatusError = _real_openai_pkg.APIStatusError
@@ -22,8 +20,7 @@ RateLimitError = _RealRateLimitError
 APIStatusError = _RealAPIStatusError
 
 def run(coro):
-    return asyncio.get_event_loop().run_until_complete(coro)
-
+    return asyncio.run(coro)
 
 def _make_gpt_client(response_text="ok", max_retries=1, model="gpt-4", api_key="test"):
     client = GPTClient(model=model, api_key=api_key, max_retries=max_retries)

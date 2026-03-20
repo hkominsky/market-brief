@@ -1,26 +1,10 @@
 import asyncio
-import importlib.util
-import os
-import sys
 from unittest.mock import AsyncMock, MagicMock
-
-sys.path.insert(0, os.path.dirname(__file__))
-
-def _load_qa():
-    spec = importlib.util.spec_from_file_location(
-        "qa_real",
-        os.path.join(os.path.dirname(__file__), "qa_real_src.py"),
-    )
-    mod = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(mod)
-    return mod
-
-_qa_mod = _load_qa()
-QAClient = _qa_mod.QAClient
+from qa import QAClient
 
 def run(coro):
-    return asyncio.get_event_loop().run_until_complete(coro)
-
+    return asyncio.run(coro)
+    
 def _make_qa(answer="Default answer"):
     mock_client = MagicMock()
     mock_client.chat = AsyncMock(return_value=answer)

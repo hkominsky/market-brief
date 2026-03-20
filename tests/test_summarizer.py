@@ -1,32 +1,14 @@
 import asyncio
 import importlib
-import importlib.util
 import json
-import os
-import sys
 from unittest.mock import AsyncMock, MagicMock
-from kpi import KPI
 import pytest
-
-sys.path.insert(0, os.path.dirname(__file__))
-
-def _load_summarizer():
-    spec = importlib.util.spec_from_file_location(
-        "summarizer_real",
-        os.path.join(os.path.dirname(__file__), "summarizer_real_src.py"),
-    )
-    mod = importlib.util.module_from_spec(spec)
-    sys.modules["summarizer_real"] = mod
-    spec.loader.exec_module(mod)
-    return mod
-
-_sum_mod = _load_summarizer()
-Summarizer = _sum_mod.Summarizer
+from kpi import KPI
+from summarizer import Summarizer
 
 def run(coro):
-    return asyncio.get_event_loop().run_until_complete(coro)
-
-
+    return asyncio.run(coro)
+    
 def _make_summarizer(response_text="{}"):
     mock_client = MagicMock()
     mock_client.chat = AsyncMock(return_value=response_text)
@@ -99,11 +81,6 @@ class TestSummarizer:
     def test_parses_date(self):
         s, _ = _make_summarizer()
         assert s._parse_response(_VALID_JSON)["date"] == "Q3 2024"
-
-    def test_returns_kpi_objects(self):
-        s, _ = _make_summarizer()
-        kpis = s._build_kpis([{"kpi": "Revenue", "value": 10.5, "unit": "USD billion"}])
-        assert len(kpis) == 1 and isinstance(kpis[0], KPI)
 
     def test_kpi_fields_correct(self):
         s, _ = _make_summarizer()

@@ -4,8 +4,6 @@ import tempfile
 from unittest.mock import MagicMock
 import pytest
 
-sys.path.insert(0, os.path.dirname(__file__))
-
 _whisper_stub = MagicMock()
 sys.modules["whisper"] = _whisper_stub
 

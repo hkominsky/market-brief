@@ -1,8 +1,4 @@
-import os
-import sys
 from chunker import Chunker
-
-sys.path.insert(0, os.path.dirname(__file__))
 
 class TestChunker:
     def test_stores_chunk_size(self):
