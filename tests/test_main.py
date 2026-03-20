@@ -9,6 +9,7 @@ sys.modules.setdefault("openai", MagicMock())
 
 from schemas import AskRequest
 import main as main_mod
+from gpt_client import QuotaExceededError
 from fastapi.testclient import TestClient
 
 _mock_transcriber_inst = MagicMock()
@@ -148,6 +149,34 @@ class TestMain:
         _client.post("/upload", files={"file": ("r.txt", io.BytesIO(b"x"), "text/plain")})
         call_args = _mock_transcriber_inst.process.call_args
         assert call_args[0][1] == ".txt"
+
+    def test_upload_quota_error_returns_402(self):
+        _mock_summarizer_inst.summarize = AsyncMock(side_effect=QuotaExceededError("quota exceeded"))
+        resp = _client.post("/upload", files={"file": ("t.txt", io.BytesIO(b"text"), "text/plain")})
+        assert resp.status_code == 402
+        _mock_summarizer_inst.summarize = AsyncMock(return_value={
+            "summary": "Strong quarter.", "kpis": [], "ticker": "AAPL", "date": "Q3 2024", "sentiment": {}
+        })
+
+    def test_upload_quota_error_detail_message(self):
+        _mock_summarizer_inst.summarize = AsyncMock(side_effect=QuotaExceededError("quota exceeded"))
+        resp = _client.post("/upload", files={"file": ("t.txt", io.BytesIO(b"text"), "text/plain")})
+        assert "quota exceeded" in resp.json()["detail"]
+        _mock_summarizer_inst.summarize = AsyncMock(return_value={
+            "summary": "Strong quarter.", "kpis": [], "ticker": "AAPL", "date": "Q3 2024", "sentiment": {}
+        })
+
+    def test_ask_quota_error_returns_402(self):
+        _mock_qa_inst.ask = AsyncMock(side_effect=QuotaExceededError("quota exceeded"))
+        resp = _client.post("/ask", json={"transcript": "t", "question": "q"})
+        assert resp.status_code == 402
+        _mock_qa_inst.ask = AsyncMock(return_value="Revenue was $10B.")
+
+    def test_ask_quota_error_detail_message(self):
+        _mock_qa_inst.ask = AsyncMock(side_effect=QuotaExceededError("quota exceeded"))
+        resp = _client.post("/ask", json={"transcript": "t", "question": "q"})
+        assert "quota exceeded" in resp.json()["detail"]
+        _mock_qa_inst.ask = AsyncMock(return_value="Revenue was $10B.")
 
     def test_returns_200(self):
         resp = _client.post("/ask", json={"transcript": "t", "question": "q"})

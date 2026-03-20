@@ -11,7 +11,7 @@ _RealAPIStatusError = _real_openai_pkg.APIStatusError
 _mock_openai_module = MagicMock()
 sys.modules.setdefault("openai", _mock_openai_module)
 
-from gpt_client import GPTClient
+from gpt_client import GPTClient, QuotaExceededError
 import gpt_client as _gpt_client_mod
 
 _gpt_client_mod.RateLimitError = _RealRateLimitError
@@ -32,6 +32,23 @@ def _make_gpt_client(response_text="ok", max_retries=1, model="gpt-4", api_key="
     )
     client.client = mock_inner
     return client, mock_inner
+
+def _make_rate_limit_err(body=None):
+    # Builds a RateLimitError with an optional body for quota testing
+    import httpx
+    resp = httpx.Response(429, request=httpx.Request("POST", "https://api.openai.com"))
+    return RateLimitError("rate limited", response=resp, body=body or {})
+
+def _make_api_status_err(status_code):
+    # Builds an APIStatusError with the given status code
+    import httpx
+    resp = httpx.Response(status_code, request=httpx.Request("POST", "https://api.openai.com"))
+    return APIStatusError("error", response=resp, body={})
+
+def _make_quota_rate_limit_err():
+    # Builds a RateLimitError that looks like an insufficient_quota billing error
+    return _make_rate_limit_err(body={"code": "insufficient_quota", "message": "quota exceeded"})
+
 
 class TestGPTClient:
     def test_stores_model(self):
@@ -90,16 +107,6 @@ class TestGPTClient:
         run(c.chat(msgs, max_tokens=100, temperature=0.0))
         assert inner.chat.completions.create.call_args[1]["messages"] == msgs
 
-    def _rate_limit_err(self):
-        import httpx
-        resp = httpx.Response(429, request=httpx.Request("POST", "https://api.openai.com"))
-        return RateLimitError("rate limited", response=resp, body={})
-
-    def _api_status_err(self, status_code):
-        import httpx
-        resp = httpx.Response(status_code, request=httpx.Request("POST", "https://api.openai.com"))
-        return APIStatusError("error", response=resp, body={})
-
     def test_retries_on_rate_limit(self):
         c = GPTClient(model="gpt-4", api_key="k", max_retries=3)
         inner = AsyncMock()
@@ -107,8 +114,8 @@ class TestGPTClient:
         mock_choice.message.content = "recovered"
         inner.chat.completions.create = AsyncMock(
             side_effect=[
-                self._rate_limit_err(),
-                self._rate_limit_err(),
+                _make_rate_limit_err(),
+                _make_rate_limit_err(),
                 MagicMock(choices=[mock_choice]),
             ]
         )
@@ -120,7 +127,7 @@ class TestGPTClient:
     def test_raises_rate_limit_after_max_retries(self):
         c = GPTClient(model="gpt-4", api_key="k", max_retries=2)
         inner = AsyncMock()
-        inner.chat.completions.create = AsyncMock(side_effect=self._rate_limit_err())
+        inner.chat.completions.create = AsyncMock(side_effect=_make_rate_limit_err())
         c.client = inner
         with patch.object(c, "_backoff", new=AsyncMock()):
             with pytest.raises(RateLimitError):
@@ -133,7 +140,7 @@ class TestGPTClient:
         mock_choice.message.content = "ok"
         inner.chat.completions.create = AsyncMock(
             side_effect=[
-                self._api_status_err(503),
+                _make_api_status_err(503),
                 MagicMock(choices=[mock_choice]),
             ]
         )
@@ -145,11 +152,53 @@ class TestGPTClient:
     def test_raises_immediately_on_400(self):
         c = GPTClient(model="gpt-4", api_key="k", max_retries=3)
         inner = AsyncMock()
-        inner.chat.completions.create = AsyncMock(side_effect=self._api_status_err(400))
+        inner.chat.completions.create = AsyncMock(side_effect=_make_api_status_err(400))
         c.client = inner
         with pytest.raises(APIStatusError):
             run(c.chat([], max_tokens=10, temperature=0.0))
         assert inner.chat.completions.create.call_count == 1
+
+    def test_quota_error_raises_immediately(self):
+        c = GPTClient(model="gpt-4", api_key="k", max_retries=4)
+        inner = AsyncMock()
+        inner.chat.completions.create = AsyncMock(side_effect=_make_quota_rate_limit_err())
+        c.client = inner
+        with patch.object(c, "_backoff", new=AsyncMock()) as mock_backoff:
+            with pytest.raises(QuotaExceededError):
+                run(c.chat([], max_tokens=10, temperature=0.0))
+        mock_backoff.assert_not_called()
+
+    def test_quota_error_does_not_retry(self):
+        c = GPTClient(model="gpt-4", api_key="k", max_retries=4)
+        inner = AsyncMock()
+        inner.chat.completions.create = AsyncMock(side_effect=_make_quota_rate_limit_err())
+        c.client = inner
+        with patch.object(c, "_backoff", new=AsyncMock()):
+            with pytest.raises(QuotaExceededError):
+                run(c.chat([], max_tokens=10, temperature=0.0))
+        assert inner.chat.completions.create.call_count == 1
+
+    def test_quota_error_message_contains_hint(self):
+        c = GPTClient(model="gpt-4", api_key="k", max_retries=1)
+        inner = AsyncMock()
+        inner.chat.completions.create = AsyncMock(side_effect=_make_quota_rate_limit_err())
+        c.client = inner
+        with pytest.raises(QuotaExceededError, match="sample dashboard"):
+            run(c.chat([], max_tokens=10, temperature=0.0))
+
+    def test_is_quota_error_true_for_insufficient_quota(self):
+        c = GPTClient(model="gpt-4", api_key="k")
+        assert c._is_quota_error(_make_quota_rate_limit_err()) is True
+
+    def test_is_quota_error_false_for_plain_rate_limit(self):
+        c = GPTClient(model="gpt-4", api_key="k")
+        assert c._is_quota_error(_make_rate_limit_err()) is False
+
+    def test_is_quota_error_fallback_on_string(self):
+        c = GPTClient(model="gpt-4", api_key="k")
+        e = _make_rate_limit_err(body=None)
+        e.body = "insufficient_quota something"
+        assert c._is_quota_error(e) is True
 
     def test_is_final_attempt_true(self):
         c = GPTClient(model="gpt-4", api_key="k", max_retries=3)
@@ -163,7 +212,7 @@ class TestGPTClient:
         c = GPTClient(model="gpt-4", api_key="k")
         with patch("asyncio.sleep", new=AsyncMock()) as mock_sleep:
             run(c._backoff(0, jitter=False))
-            assert mock_sleep.call_args[0][0] == 1  # 2**0
+            assert mock_sleep.call_args[0][0] == 1
 
     def test_backoff_increases_exponentially(self):
         c = GPTClient(model="gpt-4", api_key="k")
