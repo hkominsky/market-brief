@@ -25,7 +25,7 @@ app.add_middleware(
 )
 
 _gpt = GPTClient(model="gpt-4.1-mini", api_key=os.environ.get("OPEN_AI_API_KEY", ""))
-_transcriber = Transcriber()
+_transcriber = Transcriber(api_key=os.environ.get("OPEN_AI_API_KEY", ""))
 _summarizer = Summarizer(client=_gpt)
 _qa = QAClient(client=_gpt)
 
@@ -41,7 +41,7 @@ async def upload_transcript(file: UploadFile = File(...)):
         tmp_path = tmp.name
 
     try:
-        text = _transcriber.process(tmp_path, suffix)
+        text = await _transcriber.process(tmp_path, suffix)
         result = await _summarizer.summarize(text)
         return {**result, "transcript": text}
     finally:
