@@ -1,7 +1,6 @@
 from typing import List, Dict
 from src.model.gpt_client import GPTClient
 
-
 class QAClient:
     # Answers freeform user questions grounded in an earnings call transcript
 

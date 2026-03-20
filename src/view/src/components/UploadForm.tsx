@@ -53,16 +53,19 @@ const UploadForm = ({ onLoadMock, onLoadSample, sampleFile }: UploadFormProps) =
         body: formData,
       });
       if (!res.ok) {
-        const text = await res.text();
         let detail = "Upload failed";
-        try { detail = JSON.parse(text).detail || detail; } catch {}
+        try {
+          const json = await res.json();
+          detail = json.detail || detail;
+        } catch {}
         throw new Error(detail);
       }
-      const text = await res.text();
-      const data = JSON.parse(text);
+      const data = await res.json();
       setEarningsCalls(Array.isArray(data) ? data : [data]);
     } catch (err: any) {
       setError(err.message || "Something went wrong");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -96,19 +99,13 @@ const UploadForm = ({ onLoadMock, onLoadSample, sampleFile }: UploadFormProps) =
             {menuOpen && (
               <div className="absolute right-0 mt-1 w-44 bg-brand-card border border-brand-border rounded-card shadow-card z-20 py-1 overflow-hidden">
                 <button
-                  onClick={() => {
-                    setMenuOpen(false);
-                    onLoadMock?.();
-                  }}
+                  onClick={() => { setMenuOpen(false); onLoadMock?.(); }}
                   className="w-full text-left px-4 py-2 text-sm text-brand-text hover:bg-brand-border/40 transition-colors"
                 >
                   Dashboard Sample
                 </button>
                 <button
-                  onClick={() => {
-                    setMenuOpen(false);
-                    onLoadSample?.();
-                  }}
+                  onClick={() => { setMenuOpen(false); onLoadSample?.(); }}
                   className="w-full text-left px-4 py-2 text-sm text-brand-text hover:bg-brand-border/40 transition-colors"
                 >
                   Load Sample File
