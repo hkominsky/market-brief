@@ -4,6 +4,8 @@ import UploadForm from "./components/UploadForm";
 import Dashboard from "./components/Dashboard";
 import { MOCK_CALL } from "./mocks/mockData";
 import logo from "./assets/logo.svg";
+import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/react";
 
 export default function App() {
   const { earningsCalls, error, setError, setEarningsCalls } = useStore();
@@ -33,6 +35,8 @@ export default function App() {
         ? <Dashboard />
         : <UploadForm onLoadMock={() => setEarningsCalls([MOCK_CALL])} />
       }
+      <Analytics />
+      <SpeedInsights />
     </div>
   );
 }

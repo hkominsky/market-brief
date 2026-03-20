@@ -21,6 +21,8 @@ app.add_middleware(
     allow_origins=[
         "http://localhost:3000",
         "marketbrief-gold.vercel.app",
+        "https://marketbrief.dev",
+        "https://www.marketbrief.dev",
     ],
     allow_credentials=True,
     allow_methods=["*"],
