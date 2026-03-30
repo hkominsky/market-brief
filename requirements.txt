@@ -1,6 +1,8 @@
 fastapi==0.135.1
 httpx==0.28.1
+nltk==3.9.4
 openai==2.29.0
+pydub==0.25.1
 pydantic==2.12.5
 pytest==9.0.2
 python-dotenv==1.2.2
