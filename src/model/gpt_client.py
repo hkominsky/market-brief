@@ -4,7 +4,7 @@ from typing import List, Dict
 from openai import AsyncOpenAI, RateLimitError, APIStatusError
 
 class QuotaExceededError(RuntimeError):
-    """Raised when the OpenAI account has insufficient quota/billing."""
+    # Raised when the OpenAI account has insufficient quota/billing
     pass
 
 class GPTClient:
